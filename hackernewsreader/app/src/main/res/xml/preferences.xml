@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="General">
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_mail_outline_black_24dp"
+            android:key="key_notifications"
+            android:title="Notifications" />
+    </PreferenceCategory>
+</PreferenceScreen>
