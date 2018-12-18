@@ -1,6 +1,6 @@
 package com.alexwerff.hackernewsreader.model;
 
-public class NewsItem {
+public class Article {
     private String title;
     private String message;
 

@@ -1,9 +1,8 @@
 package com.alexwerff.hackernewsreader.controller;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 
-import com.alexwerff.hackernewsreader.model.NewsItem;
+import com.alexwerff.hackernewsreader.model.Article;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -20,8 +19,8 @@ public class NewsDataController {
         this.gson = new Gson(); //Instatiate before because it might take some time
     }
 
-    public void saveNews(Context context, List<NewsItem> news) {
-        Type newsType = new TypeToken<NewsItem>(){}.getType();
+    public void saveNews(Context context, List<Article> news) {
+        Type newsType = new TypeToken<Article>(){}.getType();
         String json = gson.toJson(news, newsType);
         context.getSharedPreferences(PREFERENCES_NEWS, Context.MODE_PRIVATE)
                 .edit()
@@ -29,8 +28,8 @@ public class NewsDataController {
                 .apply();
     }
 
-    public List<NewsItem> getNews(Context context) {
-        Type newsType = new TypeToken<NewsItem>(){}.getType();
+    public List<Article> getNews(Context context) {
+        Type newsType = new TypeToken<Article>(){}.getType();
         String json = context.getSharedPreferences(PREFERENCES_NEWS, Context.MODE_PRIVATE)
                 .getString(PREFERENCES_KEY_NEWS, "[]");
         return gson.fromJson(json, newsType);

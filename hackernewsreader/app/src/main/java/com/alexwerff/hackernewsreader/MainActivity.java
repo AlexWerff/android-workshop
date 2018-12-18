@@ -1,15 +1,21 @@
 package com.alexwerff.hackernewsreader;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
+import com.alexwerff.hackernewsreader.service.NewsService;
 import com.alexwerff.hackernewsreader.view.NewsFragment;
 import com.alexwerff.hackernewsreader.view.SettingsFragment;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity{
 
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -58,6 +64,8 @@ public class MainActivity extends AppCompatActivity {
                 .replace(R.id.fragment_container, new NewsFragment())
                 .addToBackStack("NEWS") //To tap the back button without exiting the app
                 .commit();
+        startService(new Intent(this, NewsService.class));
     }
+
 
 }

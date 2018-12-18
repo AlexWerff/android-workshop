@@ -4,8 +4,6 @@ package com.alexwerff.hackernewsreader.view;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -19,7 +17,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.alexwerff.hackernewsreader.R;
-import com.alexwerff.hackernewsreader.model.NewsItem;
+import com.alexwerff.hackernewsreader.controller.NewsHttpController;
+import com.alexwerff.hackernewsreader.model.Article;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +26,7 @@ import java.util.List;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class NewsFragment extends Fragment implements AdapterView.OnItemSelectedListener, AdapterView.OnItemClickListener {
+public class NewsFragment extends Fragment implements AdapterView.OnItemClickListener, NewsHttpController.NewsListener {
     private ListView listViewNews;
     private ListViewNewsAdapter listViewNewsAdapter;
 
@@ -40,18 +39,29 @@ public class NewsFragment extends Fragment implements AdapterView.OnItemSelected
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_news, container, false);
         this.listViewNews = v.findViewById(R.id.list_view_news);
-        List<NewsItem> newsItems = new ArrayList<>();
-        NewsItem newsItem = new NewsItem();
-        newsItem.setTitle("New Hacker News Reader");
-        newsItem.setMessage("There is a new Hacker News Reader available. Check it out now.");
-        newsItems.add(newsItem);
-        this.listViewNewsAdapter = new ListViewNewsAdapter(getContext(), R.layout.list_view_news_item, newsItems);
+        List<Article> articles = new ArrayList<>();
+        Article article = new Article();
+        article.setTitle("New Hacker News Reader");
+        article.setMessage("There is a new Hacker News Reader available. Check it out now.");
+        articles.add(article);
+        this.listViewNewsAdapter = new ListViewNewsAdapter(getContext(), R.layout.list_view_news_item, articles);
         this.listViewNews.setAdapter(this.listViewNewsAdapter);
         this.setHasOptionsMenu(true);
         this.setMenuVisibility(true);
-        this.listViewNews.setOnItemSelectedListener(this);
         this.listViewNews.setOnItemClickListener(this);
         return v;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        NewsHttpController.getInstance().setNewsListener(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        NewsHttpController.getInstance().setNewsListener(null);
     }
 
     @Override
@@ -66,15 +76,6 @@ public class NewsFragment extends Fragment implements AdapterView.OnItemSelected
     }
 
     @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-
-    }
-
-    @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         new AlertDialog.Builder(getContext())
                 .setTitle("Item selected")
@@ -84,9 +85,21 @@ public class NewsFragment extends Fragment implements AdapterView.OnItemSelected
                 .show();
     }
 
-    private class ListViewNewsAdapter extends ArrayAdapter<NewsItem> {
+    @Override
+    public void onNewsFetched(final List<Article> news) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                listViewNewsAdapter.clear();
+                listViewNewsAdapter.addAll(news);
+                listViewNewsAdapter.notifyDataSetChanged();
+            }
+        });
+    }
 
-        public ListViewNewsAdapter( Context context, int resource, List<NewsItem> objects) {
+    private class ListViewNewsAdapter extends ArrayAdapter<Article> {
+
+        public ListViewNewsAdapter( Context context, int resource, List<Article> objects) {
             super(context, resource, objects);
         }
 
@@ -95,12 +108,12 @@ public class NewsFragment extends Fragment implements AdapterView.OnItemSelected
         public View getView(int position, View convertView,ViewGroup parent) {
             LayoutInflater inflater = (LayoutInflater) getContext()
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            NewsItem newsItem = this.getItem(position);
+            Article article = this.getItem(position);
             View v = inflater.inflate(R.layout.list_view_news_item, parent, false);
             TextView textViewTitle = v.findViewById(R.id.text_view_title);
             TextView textViewDetail = v.findViewById(R.id.text_view_detail);
-            textViewTitle.setText(newsItem.getTitle());
-            textViewDetail.setText(newsItem.getMessage());
+            textViewTitle.setText(article.getTitle());
+            textViewDetail.setText(article.getMessage());
             return v;
         }
     }
