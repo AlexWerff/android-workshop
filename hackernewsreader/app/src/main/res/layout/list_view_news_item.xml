@@ -27,6 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="bottom"
+            android:singleLine="true"
             android:text="Title"
             android:textSize="18sp" />
 
@@ -36,6 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="top"
+            android:singleLine="true"
             android:text="Detail"
             android:textSize="12sp" />
     </LinearLayout>

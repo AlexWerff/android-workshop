@@ -3,6 +3,8 @@ package com.alexwerff.hackernewsreader.view;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -14,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.alexwerff.hackernewsreader.R;
@@ -29,6 +32,7 @@ import java.util.List;
 public class NewsFragment extends Fragment implements AdapterView.OnItemClickListener, NewsHttpController.NewsListener {
     private ListView listViewNews;
     private ListViewNewsAdapter listViewNewsAdapter;
+    private ProgressBar progressBarLoading;
 
     public NewsFragment() {
         // Required empty public constructor
@@ -39,11 +43,8 @@ public class NewsFragment extends Fragment implements AdapterView.OnItemClickLis
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_news, container, false);
         this.listViewNews = v.findViewById(R.id.list_view_news);
+        this.progressBarLoading = v.findViewById(R.id.progress_bar_loading);
         List<Article> articles = new ArrayList<>();
-        Article article = new Article();
-        article.setTitle("New Hacker News Reader");
-        article.setMessage("There is a new Hacker News Reader available. Check it out now.");
-        articles.add(article);
         this.listViewNewsAdapter = new ListViewNewsAdapter(getContext(), R.layout.list_view_news_item, articles);
         this.listViewNews.setAdapter(this.listViewNewsAdapter);
         this.setHasOptionsMenu(true);
@@ -77,12 +78,9 @@ public class NewsFragment extends Fragment implements AdapterView.OnItemClickLis
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        new AlertDialog.Builder(getContext())
-                .setTitle("Item selected")
-                .setMessage("Open the news or do something else in here.")
-                .setPositiveButton("OK", null)
-                .create()
-                .show();
+        Article article = (Article) parent.getItemAtPosition(position);
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(article.getUrl()));
+        startActivity(browserIntent);
     }
 
     @Override
@@ -93,6 +91,7 @@ public class NewsFragment extends Fragment implements AdapterView.OnItemClickLis
                 listViewNewsAdapter.clear();
                 listViewNewsAdapter.addAll(news);
                 listViewNewsAdapter.notifyDataSetChanged();
+                progressBarLoading.setVisibility(View.GONE);
             }
         });
     }
@@ -113,7 +112,7 @@ public class NewsFragment extends Fragment implements AdapterView.OnItemClickLis
             TextView textViewTitle = v.findViewById(R.id.text_view_title);
             TextView textViewDetail = v.findViewById(R.id.text_view_detail);
             textViewTitle.setText(article.getTitle());
-            textViewDetail.setText(article.getMessage());
+            textViewDetail.setText(article.getContent());
             return v;
         }
     }

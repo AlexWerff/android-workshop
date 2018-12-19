@@ -2,7 +2,8 @@ package com.alexwerff.hackernewsreader.model;
 
 public class Article {
     private String title;
-    private String message;
+    private String content;
+    private String url;
 
     public String getTitle() {
         return title;
@@ -12,11 +13,19 @@ public class Article {
         this.title = title;
     }
 
-    public String getMessage() {
-        return message;
+    public String getContent() {
+        return content;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }
